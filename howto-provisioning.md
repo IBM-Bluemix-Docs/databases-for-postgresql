@@ -92,6 +92,38 @@ ibmcloud resource service-instance-create example-psql databases-for-postgresql 
 }'
 ```
 
+## Using Terraform
+
+[Terraform](https://www.terraform.io/) enables you to safely and predictably create, change, and improve infrastructure. It is an open source tool that codifies APIs into declarative configuration files that can be shared amongst team members, treated as code, edited, reviewed, and versioned.
+
+The [IBM Cloud provider for Terraform](https://ibm-cloud.github.io/tf-ibm-docs/v0.13.0) supports the ability to provision an IBM Cloud Database. Here is an example to provision a Database for Postgres:
+
+```
+data "ibm_resource_group" "group" {
+  name = "default"
+}
+
+resource "ibm_resource_instance" "icd_postgres" {
+  name              = "icd-postgres-created-with-terraform"
+  location          = "eu-de"
+  service           = "databases-for-postgresql"
+  plan              = "standard"
+  # If not provided it takes the default resource group.
+  # resource_group_id = "${data.ibm_resource_group.group.id}"
+
+
+  parameters = {
+    version = "9.6"
+    # Total amount of memory to be shared between the DB members
+    # Postgres has 2 members by default.
+    "members_memory_allocation_mb" = "8192"
+  }
+}
+```
+
+More information about this terraform tag is available in the [Resource Instance](https://ibm-cloud.github.io/tf-ibm-docs/v0.13.0/r/resource_instance.html).
+
+
 ## Provisioning through the Resource Controller API
 
 You can provision new deployments by using the Resource Controller API. However, in order to use the Resource Controller API, you need some additional preparation.
